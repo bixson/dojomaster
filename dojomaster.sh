@@ -384,6 +384,9 @@ ask_typed() {
     return 0
   fi
 
+  # Echo the first character (suppressed by -s) so the user can see what they typed
+  printf "%s" "$ans_first"
+
   # Regular input - continue reading the rest of the line
   read -r ans_rest
   ans="${ans_first}${ans_rest}"
@@ -979,7 +982,7 @@ zone_pipes() {
   sep; echo "  ${DIM}PRACTICAL -- work in ${GAMEDIR}${RST}"; sep
 
   do_task "Count inactive users in data/users.csv (lines with 'false') using grep and wc" \
-    "grep false data/users.csv | wc -l" 15 \
+    "[[ \$(grep false data/users.csv | wc -l | xargs) -eq 2 ]]" 15 \
     "grep false data/users.csv | wc -l" \
     "grep filters matching lines, pipe sends them to wc -l to count."
 
