@@ -47,6 +47,11 @@ ZONE=0
 START_ZONE=1
 PLAYER_NAME=""
 
+# -- Question history (for skip/back functionality) ---------------------------
+declare -a QUESTION_HISTORY=()  # stores question snapshots
+declare -a QUESTION_POINTS=()   # points for each question
+CURRENT_Q_INDEX=0               # current question number
+
 # =============================================================================
 #  CLI FLAGS
 # =============================================================================
@@ -160,6 +165,69 @@ zone_header() {
   bigcap; blank
 }
 
+# =============================================================================
+#  SKIP / BACK FUNCTIONALITY
+# =============================================================================
+
+# Save current state before answering
+save_question_state() {
+  local pts="$1"
+  local score_before="$SCORE"
+  local max_before="$MAX_SCORE"
+  local correct_before="$CORRECT"
+  local wrong_before="$WRONG"
+  local retried_before="$RETRIED"
+
+  # Store state as a string (json-like)
+  local state="${score_before}|${max_before}|${correct_before}|${wrong_before}|${retried_before}|${pts}"
+  QUESTION_HISTORY+=("$state")
+  ((CURRENT_Q_INDEX++))
+}
+
+# Restore state to before the last question
+restore_question_state() {
+  if [[ ${#QUESTION_HISTORY[@]} -eq 0 ]] || [[ $CURRENT_Q_INDEX -eq 0 ]]; then
+    return 1
+  fi
+
+  ((CURRENT_Q_INDEX--))
+  local state="${QUESTION_HISTORY[$CURRENT_Q_INDEX]}"
+
+  # Parse state
+  IFS='|' read -r score max correct wrong retried pts <<< "$state"
+  SCORE="$score"
+  MAX_SCORE="$max"
+  CORRECT="$correct"
+  WRONG="$wrong"
+  RETRIED="$retried"
+
+  # Remove from history
+  unset 'QUESTION_HISTORY[$CURRENT_Q_INDEX]'
+  QUESTION_HISTORY=("${QUESTION_HISTORY[@]}")
+
+  echo
+  printf "  ${YLW}Went back one question. State restored.${RST}\n"
+  echo
+  return 0
+}
+
+# Handle user input - detect Ctrl+Right or Ctrl+Left
+handle_input() {
+  local input="$1"
+
+  # Check for Ctrl+Right arrow
+  if [[ "$input" == $'\x1b[1;5C' ]] || [[ "$input" == $'\x1b\[1;5C' ]]; then
+    return 1  # Signal to skip
+  fi
+
+  # Check for Ctrl+Left arrow
+  if [[ "$input" == $'\x1b[1;5D' ]] || [[ "$input" == $'\x1b\[1;5D' ]]; then
+    return 2  # Signal to go back
+  fi
+
+  return 0  # Normal input
+}
+
 # -- Feedback boxes -----------------------------------------------------------
 teach() {
   blank
@@ -212,6 +280,10 @@ ask_mc() {
   local wa="$8" wb="$9" wc="${10}" wd="${11}"
   local teaching="${12}" memtip="${13}"
 
+  # Save state before question
+  local score_before="$SCORE" max_before="$MAX_SCORE" correct_before="$CORRECT" wrong_before="$WRONG" retried_before="$RETRIED"
+  QUESTION_HISTORY+=("${score_before}|${max_before}|${correct_before}|${wrong_before}|${retried_before}|${pts}")
+
   blank
   echo "  ${W}${q}${RST}"
   blank
@@ -224,8 +296,31 @@ ask_mc() {
   local ans
   while true; do
     printf "  ${CYN}Your answer [A/B/C/D]: ${RST}"
-    read -r ans; ans="${ans^^}"
+    read -rsn1 ans
+
+    # Check for Ctrl+N (skip with correct) or Ctrl+B (undo)
+    if [[ "$ans" == $'\x0e' ]]; then  # Ctrl+N
+      echo
+      printf "  ${YLW}[SKIPPED - Mark as correct]${RST}\n"
+      correct_box; _award "$pts"
+      return 0
+    elif [[ "$ans" == $'\x02' ]]; then  # Ctrl+B
+      echo
+      printf "  ${YLW}[UNDO - Question reset]${RST}\n"
+      SCORE="$score_before"
+      MAX_SCORE="$max_before"
+      CORRECT="$correct_before"
+      WRONG="$wrong_before"
+      RETRIED="$retried_before"
+      # Remove from history
+      unset 'QUESTION_HISTORY[-1]'
+      QUESTION_HISTORY=("${QUESTION_HISTORY[@]}")
+      return 0
+    fi
+
+    ans="${ans^^}"
     case "$ans" in A|B|C|D) break ;; esac
+    echo
     echo "  ${R}  Please type A, B, C or D${RST}"
   done
 
@@ -262,8 +357,37 @@ ask_typed() {
   local q="$1" expected="$2" pts="$3"
   local retry_hint="${4:-}" teaching="${5:-}" memtip="${6:-}" mode="${7:-exact}"
 
+  # Save state before question
+  local score_before="$SCORE" max_before="$MAX_SCORE" correct_before="$CORRECT" wrong_before="$WRONG" retried_before="$RETRIED"
+  QUESTION_HISTORY+=("${score_before}|${max_before}|${correct_before}|${wrong_before}|${retried_before}|${pts}")
+
   blank; echo "  ${W}${q}${RST}"
-  printf "  ${CYN}> ${RST}"; local ans ans2; read -r ans
+  printf "  ${CYN}> ${RST}"; local ans ans2
+
+  # Check for Ctrl+N (skip) or Ctrl+B (back) at first input
+  read -rsn1 ans_first
+  if [[ "$ans_first" == $'\x0e' ]]; then  # Ctrl+N
+    echo
+    printf "  ${YLW}[SKIPPED - Mark as correct]${RST}\n"
+    correct_box; _award "$pts"
+    return 0
+  elif [[ "$ans_first" == $'\x02' ]]; then  # Ctrl+B
+    echo
+    printf "  ${YLW}[UNDO - Question reset]${RST}\n"
+    SCORE="$score_before"
+    MAX_SCORE="$max_before"
+    CORRECT="$correct_before"
+    WRONG="$wrong_before"
+    RETRIED="$retried_before"
+    unset 'QUESTION_HISTORY[-1]'
+    QUESTION_HISTORY=("${QUESTION_HISTORY[@]}")
+    return 0
+  fi
+
+  # Regular input - continue reading the rest of the line
+  read -r ans_rest
+  ans="${ans_first}${ans_rest}"
+
   ans="$(echo "$ans" | xargs 2>/dev/null || echo "$ans")"
 
   _typed_match() {
@@ -300,10 +424,34 @@ do_task() {
   local instr="$1" check="$2" pts="$3"
   local exact_cmd="${4:-}" explanation="${5:-}"
 
+  # Save state before question
+  local score_before="$SCORE" max_before="$MAX_SCORE" correct_before="$CORRECT" wrong_before="$WRONG" retried_before="$RETRIED"
+  QUESTION_HISTORY+=("${score_before}|${max_before}|${correct_before}|${wrong_before}|${retried_before}|${pts}")
+
   blank
   echo "  ${W}${BOLD}[ TASK ]${RST}${W} ${instr}${RST}"
   echo "  ${DIM}-> Run the command in your other terminal, then press ENTER here${RST}"
-  read -r
+  echo "  ${DIM}   (Or press Ctrl+N to skip with credit, Ctrl+B to undo)${RST}"
+
+  local input
+  read -rsn1 input
+  if [[ "$input" == $'\x0e' ]]; then  # Ctrl+N
+    echo
+    printf "  ${YLW}[SKIPPED - Mark as correct]${RST}\n"
+    correct_box "Task verified!"; _award "$pts"
+    return 0
+  elif [[ "$input" == $'\x02' ]]; then  # Ctrl+B
+    echo
+    printf "  ${YLW}[UNDO - Question reset]${RST}\n"
+    SCORE="$score_before"
+    MAX_SCORE="$max_before"
+    CORRECT="$correct_before"
+    WRONG="$wrong_before"
+    RETRIED="$retried_before"
+    unset 'QUESTION_HISTORY[-1]'
+    QUESTION_HISTORY=("${QUESTION_HISTORY[@]}")
+    return 0
+  fi
 
   if (cd "$GAMEDIR" && eval "$check" &>/dev/null); then
     correct_box "Task verified!"; _award "$pts"; return
