@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 #
-#   LINUX DOJO  --  Master the Linux terminal. One zone at a time.
+#   DOJOMASTER  --  Master the Linux terminal. One zone at a time.
 #   https://github.com/bixson/dojomaster
 #
 #   A fully interactive terminal game covering the core Linux skill set:
@@ -11,10 +11,10 @@
 #   Requires: bash 4.0+
 #
 #   Usage:
-#     bash linux-dojo.sh               # full game
-#     bash linux-dojo.sh --zone 5      # jump to a specific zone
-#     bash linux-dojo.sh --list        # show all zones
-#     bash linux-dojo.sh --help        # show this help
+#     bash dojomaster.sh               # full game
+#     bash dojomaster.sh --zone 5      # jump to a specific zone
+#     bash dojomaster.sh --list        # show all zones
+#     bash dojomaster.sh --help        # show this help
 #
 #   License: MIT
 #   Author:  bixson
@@ -22,8 +22,8 @@
 # =============================================================================
 
 VERSION="1.0.0"
-GAME_NAME="linux-dojo"
-GAMEDIR="$HOME/.linux-dojo"
+GAME_NAME="dojomaster"
+GAMEDIR="$HOME/.dojomaster"
 LOGFILE="$GAMEDIR/session.log"
 
 # -- Colours ------------------------------------------------------------------
@@ -53,14 +53,14 @@ PLAYER_NAME=""
 show_help() {
   cat << 'HELP'
 
-  linux-dojo -- Master the Linux terminal. One zone at a time.
+  dojomaster -- Master the Linux terminal. One zone at a time.
 
   USAGE
-    bash linux-dojo.sh               Run the full game
-    bash linux-dojo.sh --zone N      Start at zone N (1-7)
-    bash linux-dojo.sh --list        List all zones
-    bash linux-dojo.sh --help        Show this help
-    bash linux-dojo.sh --version     Show version
+    bash dojomaster.sh               Run the full game
+    bash dojomaster.sh --zone N      Start at zone N (1-7)
+    bash dojomaster.sh --list        List all zones
+    bash dojomaster.sh --help        Show this help
+    bash dojomaster.sh --version     Show version
 
   ZONES
     1  Navigation      cd, ls, pwd, mkdir
@@ -87,7 +87,7 @@ HELP
 
 show_list() {
   echo
-  echo "  ${BOLD}${CYN}linux-dojo v${VERSION} -- Zones${RST}"
+  echo "  ${BOLD}${CYN}dojomaster v${VERSION} -- Zones${RST}"
   echo
   echo "  ${YLW}1${RST}  Navigation      cd, ls, pwd, mkdir"
   echo "  ${YLW}2${RST}  File Ops        touch, cp, mv, echo, >, >>"
@@ -97,7 +97,7 @@ show_list() {
   echo "  ${YLW}6${RST}  Processes       ps, kill, top, htop"
   echo "  ${YLW}7${RST}  SSH             ssh, scp, authorized_keys"
   echo
-  echo "  Run: bash linux-dojo.sh --zone N  to start at zone N"
+  echo "  Run: bash dojomaster.sh --zone N  to start at zone N"
   echo
   exit 0
 }
@@ -107,7 +107,7 @@ parse_args() {
     case "$1" in
       --help|-h)    show_help ;;
       --list|-l)    show_list ;;
-      --version|-v) echo "linux-dojo v${VERSION}"; exit 0 ;;
+      --version|-v) echo "dojomaster v${VERSION}"; exit 0 ;;
       --zone|-z)
         if [[ -z "$2" || ! "$2" =~ ^[1-7]$ ]]; then
           echo "  Error: --zone requires a number 1-7"; exit 1
@@ -335,7 +335,7 @@ setup_game() {
   mkdir -p "$GAMEDIR"/{mission,logs,secure,scripts,data,reports}
   log "Game started v${VERSION}"
 
-  echo "linux-dojo Mission Log" > "$GAMEDIR/mission/briefing.txt"
+  echo "dojomaster Mission Log" > "$GAMEDIR/mission/briefing.txt"
   echo "Date: $(date)" >> "$GAMEDIR/mission/briefing.txt"
   echo "Status: ACTIVE" >> "$GAMEDIR/mission/briefing.txt"
 
@@ -514,7 +514,7 @@ BANNER
     echo "  ${YLW}Jumping to zone ${START_ZONE} as requested.${RST}"
     blank
   else
-    echo "  ${DIM}Tip: run  bash linux-dojo.sh --zone N  to jump straight to a zone.${RST}"
+    echo "  ${DIM}Tip: run  bash dojomaster.sh --zone N  to jump straight to a zone.${RST}"
     blank
     echo "  ${W}Want to start from a specific zone? Enter a number 1-7, or ENTER for zone 1:${RST}"
     printf "  ${CYN}Start zone [1]: ${RST}"
@@ -1165,8 +1165,8 @@ results() {
   blank
   sep; blank
   bigcap
-  printf "  ${GRN}Thanks for playing linux-dojo, ${BOLD}%s${RST}${GRN}!${RST}\n" "$PLAYER_NAME"
-  printf "  ${DIM}Star the repo: https://github.com/YOUR_USERNAME/linux-dojo${RST}\n"
+  printf "  ${GRN}Thanks for playing dojomaster, ${BOLD}%s${RST}${GRN}!${RST}\n" "$PLAYER_NAME"
+  printf "  ${DIM}Star the repo: https://github.com/bixson/dojomaster${RST}\n"
   blank
   log "Game ended. Score: ${SCORE}/${MAX_SCORE} (${pct}%) Grade: ${grade}"
 }
