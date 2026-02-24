@@ -1315,6 +1315,7 @@ results() {
   bigcap
   printf "  ${GRN}Thanks for playing dojomaster, ${BOLD}%s${RST}${GRN}!${RST}\n" "$PLAYER_NAME"
   printf "  ${DIM}Star the repo: https://github.com/bixson/dojomaster${RST}\n"
+  printf "  ${DIM}ASCII art generated with TAAG (patorjk.com)${RST}\n"
   blank
   log "Game ended. Score: ${SCORE}/${MAX_SCORE} (${pct}%) Grade: ${grade}"
 }
