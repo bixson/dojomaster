@@ -809,7 +809,7 @@ zone_pipes() {
     "ls -a includes two special entries:|. = the current directory itself|.. = the parent directory|So ls -a | wc -l always reports 2 MORE than actual file count." \
     "ls -a gotcha: always 2 extra entries: . and .."
 
-  ask_typed "Write the full pipe chain to find all ERROR lines in server.log AND count them:" \
+  ask_typed "Write the full pipe chain to find all ERROR lines in logs/server.log AND count them:" \
     "grep ERROR logs/server.log | wc -l" 12 \
     "Three parts: grep command, pipe, then the counting command." \
     "grep ERROR logs/server.log | wc -l|Stage 1: grep filters to ERROR lines.|Stage 2: wc -l counts the resulting lines." \
@@ -831,7 +831,7 @@ zone_pipes() {
   sep; echo "  ${DIM}PRACTICAL -- work in ${GAMEDIR}${RST}"; sep
 
   do_task "Count inactive users in data/users.csv (lines with 'false') using grep and wc" \
-    "grep false data/users.csv | wc -l | grep -qE '^[0-9]+$'" 15 \
+    "grep false data/users.csv | wc -l" 15 \
     "grep false data/users.csv | wc -l" \
     "grep filters matching lines, pipe sends them to wc -l to count."
 
@@ -877,11 +877,11 @@ zone_permissions() {
     "r = 4, w = 2, x = 1.|rwx = 4+2+1 = 7|rw- = 4+2+0 = 6|r-x = 4+0+1 = 5|r-- = 4+0+0 = 4|--- = 0" \
     "r=4, w=2, x=1. rwx = 4+2+1 = 7. Max is always 7."
 
-  ask_typed "chmod 755 deploy.sh -- describe each group's permissions (owner, group, others):" \
-    "owner rwx group r-x others r-x" 12 \
-    "Break down each digit: 7=?, 5=?, 5=? Use r=4, w=2, x=1." \
-    "chmod 755:|7 (owner)  = 4+2+1 = rwx  (full control)|5 (group)  = 4+0+1 = r-x  (read and execute)|5 (others) = 4+0+1 = r-x  (read and execute)" \
-    "755: owner=rwx(7), group=r-x(5), others=r-x(5)."
+  ask_typed "chmod 755 deploy.sh -- describe owner permissions:" \
+    "rwx" 12 \
+    "What does the 7 mean? Use r=4, w=2, x=1." \
+    "7 = rwx: read(4) + write(2) + execute(1) = 7|rwx = full permissions for owner" \
+    "7 = rwx. That's full permissions."
 
   ask_mc "What octal value represents the permissions '-rw-r--r--'?" \
     "755" "644" "600" "666" \
@@ -1052,9 +1052,9 @@ zone_ssh() {
 
   ask_typed "Write the SSH command to connect using a private key file called 'mykey.pem':" \
     "ssh -i mykey.pem ubuntu@188.1.2.3" 10 \
-    "There is a flag for specifying the key file. Think: i for identity." \
+    "There is a flag for specifying the key file. Think: i for identity. The flag goes BEFORE the username." \
     "ssh -i /path/to/private_key user@host|-i = identity file: the path to your private key|Common with cloud VMs on AWS, DigitalOcean, Azure." \
-    "ssh -i = identity file (path to your private key)."
+    "ssh -i = identity file (path to your private key). Flag before username."
 
   ask_mc "Where on the SERVER are authorised public keys stored for a given user?" \
     "/etc/ssh/authorized_keys for all users centrally" \
@@ -1071,9 +1071,9 @@ zone_ssh() {
 
   ask_typed "Write the SCP command to copy local file 'compose.yaml' to the home dir on 188.1.2.3 as ubuntu:" \
     "scp compose.yaml ubuntu@188.1.2.3:~/" 12 \
-    "SCP is like cp but one side is remote. Format: scp source user@host:path" \
-    "scp = secure copy (uses SSH).|Upload: scp local_file user@host:~/remote/|Download: scp user@host:/remote/file ./local/|The colon ':' separates hostname from remote path." \
-    "scp local remote. Remote = user@host:path."
+    "SCP is like cp but one side is remote. Format: scp source user@host:path. Home directory is ~/" \
+    "scp = secure copy (uses SSH).|Upload: scp local_file user@host:~/remote/|Download: scp user@host:/remote/file ./local/|The colon ':' separates hostname from remote path. Use ~/ for home." \
+    "scp local remote. Remote = user@host:path. Home = ~/"
 
   ask_typed "Write the SCP command to DOWNLOAD /var/log/app.log from the server to your current directory:" \
     "scp ubuntu@188.1.2.3:/var/log/app.log ." 12 \

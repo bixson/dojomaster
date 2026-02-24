@@ -1,0 +1,60 @@
+ first: “  Write the full pipe chain to find all ERROR lines in server.log AND count them:
+  > grep -i 'error' server.log | wc -l
+    Not quite.  Three parts: grep command, pipe, then the counting command.
+
+    [RETRY] One more try for half points > grep 'ERROR' server.log | wc -l
+    WRONG      Still not right. Moving on.
+    -> Correct answer: grep ERROR logs/server.log | wc -l
+  +0 pts
+
+“
+second:
+  [ TASK ] Count inactive users in data/users.csv (lines with 'false') using grep and wc
+  -> Run the command in your other terminal, then press ENTER here
+
+
+    [X] Check failed. Here is the command:
+
+    Command:  grep false data/users.csv | wc -l
+    Why: grep filters matching lines, pipe sends them to wc -l to count.
+
+    Run that now, then press ENTER for half points:
+
+    WRONG      Task still not completed. Moving on.
+  +0 pts
+
+“~/.dojomaster ❯ grep -i 'false' data/users.csv | wc -l
+       2
+~/.dojomaster ❯ grep false data/users.csv | wc -l
+       2
+~/.dojomaster ❯ “  Third(doesn’t work in this kind of game):” chmod 755 deploy.sh -- describe each group's permissions (owner, group, others):
+  > owner=7 group=5
+    Not quite.  Break down each digit: 7=?, 5=?, 5=? Use r=4, w=2, x=1.
+
+    [RETRY] One more try for half points >
+    WRONG      Still not right. Moving on.
+    -> Correct answer: owner rwx group r-x others r-x
+  +0 pts
+
+  +--[ TEACHING MOMENT ]--------------------------------------+
+  |  chmod 755:                                                |
+  |  7 (owner)  = 4+2+1 = rwx  (full control)                  |
+  |  5 (group)  = 4+0+1 = r-x  (read and execute)              |
+  |  5 (others) = 4+0+1 = r-x  (read and execute)              |
+  +-------------------------------------------------------------+
+  [TIP] 755: owner=rwx(7), group=r-x(5), others=r-x(5).
+“.  fourth(could be true?):”Write the SSH command to connect using a private key file called 'mykey.pem':
+  > ssh ubuntu:mykey.pem@188.1.2.3
+    Not quite.  There is a flag for specifying the key file. Think: i for identity.
+
+    [RETRY] One more try for half points > ssh ubuntu@188.1.2.3 -i mykey.pem
+    WRONG      Still not right. Moving on.
+    -> Correct answer: ssh -i mykey.pem ubuntu@188.1.2.3
+  +0 pts”. fifth (same as fourth):”  Write the SCP command to copy local file 'compose.yaml' to the home dir on 188.1.2.3 as ubuntu:
+  > scp compose.yaml ubuntu@188.1.2.3:~
+    Not quite.  SCP is like cp but one side is remote. Format: scp source user@host:path
+
+    [RETRY] One more try for half points > scp compose.yaml ubuntu@188.1.2.3:home
+    WRONG      Still not right. Moving on.
+    -> Correct answer: scp compose.yaml ubuntu@188.1.2.3:~/
+  +0 pts”.    
