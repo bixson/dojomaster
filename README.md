@@ -13,13 +13,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell: Bash](https://img.shields.io/badge/Shell-Bash%204.0%2B-green.svg)](https://www.gnu.org/software/bash/)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Git%20Bash-blue.svg)](#requirements)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 </div>
 
 ---
 
-**linux-dojo** is a fully interactive terminal game that trains you on the core Linux command-line skill set — the kind that comes up in job interviews, cloud deployments, and university exams.
+**dojomaster** is a fully interactive terminal game that trains you on the core Linux command-line skill set — the kind that comes up in job interviews, cloud deployments, and university exams.
 
 No installation. No dependencies. Just bash.
 
@@ -29,12 +28,12 @@ No installation. No dependencies. Just bash.
 
 ```bash
 # Option 1: clone and run
-git clone https://github.com/YOUR_USERNAME/linux-dojo.git
-cd linux-dojo
-bash linux-dojo.sh
+git clone https://github.com/bixson/dojomaster.git
+cd dojomaster
+bash dojomaster.sh
 
 # Option 2: run directly (curl)
-bash <(curl -s https://raw.githubusercontent.com/YOUR_USERNAME/linux-dojo/main/linux-dojo.sh)
+bash <(curl -s https://raw.githubusercontent.com/bixson/dojomaster/main/dojomaster.sh)
 ```
 
 ---
@@ -55,11 +54,11 @@ bash <(curl -s https://raw.githubusercontent.com/YOUR_USERNAME/linux-dojo/main/l
 
 ## How It Works
 
-linux-dojo mixes **theory questions** and **real shell tasks** — you run actual commands in a second terminal while the game verifies the results.
+dojomaster mixes **theory questions** and **real shell tasks** — you run actual commands in a second terminal while the game verifies the results.
 
 ### When you get something wrong, it actually helps you
 
-Most quiz tools just show the correct answer and move on. linux-dojo does three things instead:
+Most quiz tools just show the correct answer and move on. dojomaster does three things instead:
 
 **Multiple choice** — tells you *why your specific pick was wrong*, not just what the right answer is:
 ```
@@ -107,11 +106,11 @@ Most quiz tools just show the correct answer and move on. linux-dojo does three 
 ## CLI Options
 
 ```
-bash linux-dojo.sh               # full game (all 7 zones)
-bash linux-dojo.sh --zone 5      # jump straight to zone 5
-bash linux-dojo.sh --list        # list all zones with topics
-bash linux-dojo.sh --help        # show help
-bash linux-dojo.sh --version     # show version
+bash dojomaster.sh               # full game (all 7 zones)
+bash dojomaster.sh --zone 5      # jump straight to zone 5
+bash dojomaster.sh --list        # list all zones with topics
+bash dojomaster.sh --help        # show help
+bash dojomaster.sh --version     # show version
 ```
 
 ---
@@ -224,8 +223,6 @@ Contributions are welcome — new zones, corrections, or better question explana
 3. Make your changes
 4. Open a PR with a short description
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
 ---
 
 ## Roadmap
@@ -241,7 +238,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT
 
 ---
 
