@@ -33,7 +33,7 @@ cd dojomaster
 bash dojomaster.sh
 
 # Option 2: run directly (curl)
-bash <(curl -s https://raw.githubusercontent.com/bixson/dojomaster/main/dojomaster.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/bixson/dojomaster/master/dojomaster.sh)
 ```
 
 ---
