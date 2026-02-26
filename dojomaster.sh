@@ -392,6 +392,7 @@ ask_typed() {
   ans="${ans_first}${ans_rest}"
 
   ans="$(echo "$ans" | xargs 2>/dev/null || echo "$ans")"
+  ans="${ans//$'\r'/}"
 
   _typed_match() {
     local a="${1,,}" e="${2,,}"
@@ -407,6 +408,7 @@ ask_typed() {
   blank
   printf "  ${YLW}  [RETRY] One more try for half points > ${RST}"; read -r ans2
   ans2="$(echo "$ans2" | xargs 2>/dev/null || echo "$ans2")"
+  ans2="${ans2//$'\r'/}"
 
   if _typed_match "$ans2" "$expected"; then
     correct_box "Got it on retry!"; _half "$pts"; return
