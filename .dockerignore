@@ -1,0 +1,6 @@
+.git
+.github
+k8s
+*.iml
+.DS_Store
+README.md
